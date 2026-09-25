@@ -24,17 +24,17 @@ graph TD
 
     subgraph Backend ["DisasterNav Express Server (Backend: Port 3001)"]
         ServerEntry["server.js (Express Entry Point)"]
-        Routes["Routes (src/routes/*)"]
-        Services["Services (src/services/*)"]
-        Cache["In-Memory TTL Cache (src/utils/cache.js)"]
-        GeoUtils["Geometry & Detour (src/utils/geoUtils.js)"]
-        FallbackData["Fallback Datasets (src/data/*)"]
+        Routes["Routes (server/routes/*)"]
+        EarthquakeRoute["earthquakes.js (USGS Feed)"]
+        FireRoute["fires.js (NASA FIRMS & Fallback)"]
+        GeocodeRoute["geocode.js (Photon Search)"]
+        RoutingRoute["routing.js (ORS/OSRM Avoidance Engine)"]
 
         ServerEntry --> Routes
-        Routes --> Services
-        Services <--> Cache
-        Services --> GeoUtils
-        Services --> FallbackData
+        Routes --> EarthquakeRoute
+        Routes --> FireRoute
+        Routes --> GeocodeRoute
+        Routes --> RoutingRoute
     end
 
     subgraph External ["External Upstream Providers"]
@@ -46,10 +46,10 @@ graph TD
 
     ClientAPI -->|HTTP Fetch /api/*| Proxy
     Proxy -->|Local Forward| ServerEntry
-    Services -->|Secure HTTPS| USGS
-    Services -->|Secure HTTPS (API Key)| FIRMS
-    Services -->|HTTPS| Photon
-    Services -->|HTTPS (API Key / Fallback)| ORS
+    EarthquakeRoute -->|Live GeoJSON| USGS
+    FireRoute -->|CSV Hotspots| FIRMS
+    GeocodeRoute -->|Location Queries| Photon
+    RoutingRoute -->|Directions / Detour| ORS
 ```
 
 ---
@@ -58,7 +58,7 @@ graph TD
 
 | Feature / Concern | Frontend (`/client`) | Backend (`/server`) |
 |-------------------|----------------------|---------------------|
-| **Core Technology** | React 18, Vite, Leaflet, Turf.js | Node.js, Express, native Fetch |
+| **Core Technology** | React 18, Vite, Leaflet, Turf.js | Node.js, Express, Native Fetch |
 | **Port** | `http://localhost:5173` | `http://localhost:3001` |
 | **Primary Job** | Interactive visual UI, user clicks, drawing map vectors | Data proxying, API key security, caching, server-side detour routing |
 | **Where it Runs** | In the user's web browser | On the local or cloud Node.js server |
@@ -70,13 +70,11 @@ graph TD
 
 ## 📁 1. Frontend Structure (`/client`)
 
-The frontend code lives inside `client/`. Everything executed in the user's browser is here:
-
 ```
 client/
 ├── public/                 # Static assets, logos, icons
 ├── src/
-│   ├── api/                # ⚡ FRONTEND API CLIENT LAYER
+│   ├── api/                # ⚡ FRONTEND API CLIENT LAYER (Calls backend proxy)
 │   │   ├── earthquakes.js  # Sends fetch('/api/earthquakes')
 │   │   ├── fires.js        # Sends fetch('/api/fires')
 │   │   ├── floods.js       # Loads flood telemetry
@@ -125,38 +123,20 @@ client/
 
 ## 📁 2. Backend Structure (`/server`)
 
-The backend code lives inside `server/`. It is structured into standard architectural layers:
+The backend is kept lean and hackathon-optimized into **4 self-contained route files**:
 
 ```
 server/
-├── src/
-│   ├── config/             # ⚙️ CONFIGURATION & ENVIRONMENT
-│   │   └── index.js        # Loads .env, exports PORT, API keys, cache TTL
-│   │
-│   ├── data/               # 📦 FALLBACK DATASETS
-│   │   └── fallbackFires.js# Realistic wildfire data for India/local region
-│   │
-│   ├── routes/             # 🚦 HTTP ROUTE CONTROLLERS (Express Routers)
-│   │   ├── earthquakeRoutes.js  # GET  /api/earthquakes
-│   │   ├── fireRoutes.js        # GET  /api/fires
-│   │   ├── geocodeRoutes.js     # GET  /api/geocode
-│   │   └── routingRoutes.js     # POST /api/route
-│   │
-│   ├── services/           # 🧠 BUSINESS & INTEGRATION SERVICES
-│   │   ├── earthquakeService.js # Fetches USGS ShakeNet GeoJSON & formats properties
-│   │   ├── fireService.js       # Fetches NASA FIRMS CSV, parses, or serves fallback
-│   │   ├── geocodeService.js    # Proxies Komoot Photon OSM geocoding with caching
-│   │   └── routingService.js    # ORS avoid_polygons routing + OSRM geometric detour fallback
-│   │
-│   └── utils/              # 🧰 BACKEND UTILITIES
-│       ├── cache.js        # In-memory TTL cache (5-minute window)
-│       └── geoUtils.js     # Haversine distance formula & geometric detour calculation
-│
+├── routes/
+│   ├── earthquakes.js      # GET  /api/earthquakes (USGS live alerts + cache)
+│   ├── fires.js            # GET  /api/fires (NASA FIRMS hotspots + fallback)
+│   ├── geocode.js          # GET  /api/geocode (Photon search + cache)
+│   └── routing.js          # POST /api/route (ORS avoid_polygons + OSRM geometric detour)
 ├── .env                    # Secret API keys (ORS, FIRMS)
 ├── .env.example            # Environment template
 ├── package.json            # Backend packages: Express, Cors, Dotenv
 ├── README.md               # Backend guide
-└── server.js               # Main Express application entry point & middleware mounting
+└── server.js               # Clean Express application entry point (mounts routes)
 ```
 
 ---
@@ -186,20 +166,18 @@ export default defineConfig({
 ```
 
 ### Request Flow Example:
-1. User searches for a route to "Berkeley Hills" in the UI.
-2. `client/src/api/routing.js` executes:
+1. User plans a trip in `client/src/components/NavDrawer.jsx`.
+2. `client/src/api/routing.js` sends:
    ```javascript
    fetch('/api/route', {
      method: 'POST',
      body: JSON.stringify({ start, end, avoid_polygons })
    })
    ```
-3. The browser sends the request to `http://localhost:5173/api/route`.
-4. Vite's proxy receives the request and forwards it to `http://localhost:3001/api/route`.
-5. `server/server.js` routes it to `routingRoutes.js` -> `routingService.js`.
-6. The backend checks OpenRouteService or calculates a safe detour waypoint around the disaster polygon using `geoUtils.js`.
-7. The result returns back through Vite to `client/src/components/RouteLayer.jsx`.
-8. The Leaflet map paints the safe path in bright green!
+3. Vite proxies the request to `http://localhost:3001/api/route`.
+4. `server/server.js` passes it to `server/routes/routing.js`.
+5. The backend checks OpenRouteService or computes an intelligent detour around the hazard polygon.
+6. The safe route is returned and painted in green by `client/src/components/RouteLayer.jsx`.
 
 ---
 

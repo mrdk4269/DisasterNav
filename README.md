@@ -52,13 +52,12 @@ DisasterNav/
 │   └── README.md           # [Frontend Documentation](client/README.md)
 │
 ├── server/                 # ⚙️ BACKEND (Express, Caching, Routing Engine)
-│   ├── src/
-│   │   ├── config/         # Environment variables & constants
-│   │   ├── data/           # Fallback disaster datasets
-│   │   ├── routes/         # Express API routers (/api/earthquakes, /api/fires, etc.)
-│   │   ├── services/       # Upstream API integrations & detour logic
-│   │   └── utils/          # In-memory TTL cache & Haversine/Detour helpers
-│   ├── server.js           # Express app setup and middleware mounting
+│   ├── routes/             # Self-contained endpoints for Hackathon demo
+│   │   ├── earthquakes.js  # USGS ShakeNet earthquake feed + cache
+│   │   ├── fires.js        # NASA FIRMS hotspots + fallback data
+│   │   ├── geocode.js      # Komoot Photon (OSM) search
+│   │   └── routing.js      # Safe routing & hazard polygon avoidance
+│   ├── server.js           # Clean Express app entry point mounting routes
 │   └── README.md           # [Backend Documentation](server/README.md)
 │
 ├── ARCHITECTURE.md         # 📖 [Full Architecture & Data Flow Guide](ARCHITECTURE.md)

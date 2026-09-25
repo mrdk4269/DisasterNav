@@ -1,27 +1,32 @@
-import { getCached, setCached } from '../utils/cache.js';
+import express from 'express';
+
+const router = express.Router();
+
+const geocodeCache = new Map();
+const CACHE_TTL_MS = 5 * 60 * 1000;
 
 /**
- * Geocoding search service proxying Photon / Komoot OpenStreetMap API.
- * Includes in-memory caching for query results.
- * @param {string} query 
- * @returns {Promise<Array>}
+ * GET /api/geocode?q=query
+ * Proxies Komoot Photon (OpenStreetMap) geocoding with in-memory caching.
  */
-export async function searchGeocode(query) {
+router.get('/', async (req, res) => {
+  const query = req.query.q;
   if (!query || query.trim().length < 2) {
-    return [];
+    return res.json([]);
   }
 
-  const cleanQuery = query.trim();
-  const cacheKey = `geocode_${cleanQuery.toLowerCase()}`;
-  const cached = getCached(cacheKey);
-  if (cached) {
-    return cached;
+  const cleanQuery = query.trim().toLowerCase();
+  
+  // Check cache
+  const cached = geocodeCache.get(cleanQuery);
+  if (cached && (Date.now() - cached.timestamp < CACHE_TTL_MS)) {
+    return res.json(cached.data);
   }
 
   try {
     const photonUrl = `https://photon.komoot.io/api/?q=${encodeURIComponent(cleanQuery)}&limit=8`;
     const photonRes = await fetch(photonUrl, {
-      headers: { 'User-Agent': 'DisasterNav-Demo-App/1.0' },
+      headers: { 'User-Agent': 'DisasterNav-Hackathon-App/1.0' },
       signal: AbortSignal.timeout(4000)
     });
 
@@ -44,13 +49,15 @@ export async function searchGeocode(query) {
           };
         });
 
-        setCached(cacheKey, results);
-        return results;
+        geocodeCache.set(cleanQuery, { data: results, timestamp: Date.now() });
+        return res.json(results);
       }
     }
   } catch (err) {
-    console.warn('[GeocodeService] Photon error:', err.message);
+    console.warn('[Geocode] Photon search error:', err.message);
   }
 
-  return [];
-}
+  return res.json([]);
+});
+
+export default router;

@@ -1,20 +1,23 @@
 import express from 'express';
 import cors from 'cors';
-import { config } from './src/config/index.js';
+import dotenv from 'dotenv';
 
-// Route Handlers
-import earthquakeRoutes from './src/routes/earthquakeRoutes.js';
-import fireRoutes from './src/routes/fireRoutes.js';
-import geocodeRoutes from './src/routes/geocodeRoutes.js';
-import routingRoutes from './src/routes/routingRoutes.js';
+// Route Handlers (Clean, self-contained endpoints for Hackathon demo)
+import earthquakeRoutes from './routes/earthquakes.js';
+import fireRoutes from './routes/fires.js';
+import geocodeRoutes from './routes/geocode.js';
+import routingRoutes from './routes/routing.js';
+
+dotenv.config();
 
 const app = express();
+const PORT = process.env.PORT || 3001;
 
 // Middlewares
 app.use(cors());
 app.use(express.json({ limit: '10mb' }));
 
-// Health Check Endpoint
+// Health Check
 app.get('/api/health', (req, res) => {
   res.json({
     status: 'ok',
@@ -24,16 +27,15 @@ app.get('/api/health', (req, res) => {
   });
 });
 
-// Mount API Routers
+// Mount Routes
 app.use('/api/earthquakes', earthquakeRoutes);
 app.use('/api/fires', fireRoutes);
 app.use('/api/geocode', geocodeRoutes);
 app.use('/api/route', routingRoutes);
 
-// Start Server
-app.listen(config.PORT, () => {
-  console.log(`[DisasterNav Backend] Listening on http://localhost:${config.PORT}`);
-  console.log(`[DisasterNav Backend] Endpoints mounted:`);
+app.listen(PORT, () => {
+  console.log(`[DisasterNav Backend] Running at http://localhost:${PORT}`);
+  console.log(`[DisasterNav Backend] Active Routes:`);
   console.log(`  - GET  /api/health`);
   console.log(`  - GET  /api/earthquakes`);
   console.log(`  - GET  /api/fires`);

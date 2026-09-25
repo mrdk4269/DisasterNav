@@ -1,85 +1,51 @@
 # DisasterNav Backend (`/server`)
 
-The **DisasterNav Backend** is a high-performance Node.js / Express proxy and calculation engine. It acts as the secure intermediary between the DisasterNav frontend and external geospatial disaster telemetry feeds.
+The **DisasterNav Backend** is a lightweight, high-performance Node.js / Express proxy and safe navigation calculation engine designed for fast hackathon demonstrations.
 
 ---
 
-## 🏗️ Architecture & Folder Structure
+## 🏗️ Clean Hackathon Structure
 
 ```
 server/
-├── src/
-│   ├── config/
-│   │   └── index.js              # Environment configuration & constants
-│   ├── data/
-│   │   └── fallbackFires.js      # Curated fallback active wildfire dataset
-│   ├── routes/
-│   │   ├── earthquakeRoutes.js   # USGS ShakeNet earthquake endpoints
-│   │   ├── fireRoutes.js         # NASA FIRMS active hotspot endpoints
-│   │   ├── geocodeRoutes.js      # Komoot Photon OSM geocoding endpoints
-│   │   └── routingRoutes.js      # OpenRouteService & OSRM safe routing endpoints
-│   ├── services/
-│   │   ├── earthquakeService.js  # Fetches & maps USGS GeoJSON feeds
-│   │   ├── fireService.js        # Parses NASA FIRMS CSV & handles fallbacks
-│   │   ├── geocodeService.js     # Manages geocoding requests with caching
-│   │   └── routingService.js     # Calculates routes with polygon hazard avoidance
-│   └── utils/
-│       ├── cache.js              # In-memory TTL cache (5-minute window)
-│       └── geoUtils.js           # Haversine distance & dynamic detour waypoint calculations
-├── .env                          # Local environment variables
-├── .env.example                  # Template for environment variables
-├── package.json                  # Dependencies & scripts
-├── README.md                     # This documentation file
-└── server.js                     # Express app setup, middleware, and route mounting
+├── routes/
+│   ├── earthquakes.js    # Live USGS ShakeNet feed + in-memory cache (~45 lines)
+│   ├── fires.js          # NASA FIRMS active fire hotspots + local fallback (~75 lines)
+│   ├── geocode.js        # Komoot Photon (OSM) search & autocomplete (~40 lines)
+│   └── routing.js        # Safe routing with dynamic hazard polygon avoidance (~130 lines)
+├── .env                  # Local API keys (optional: FIRMS, ORS)
+├── .env.example          # Environment template
+├── package.json          # Dependencies & start scripts
+├── README.md             # This guide
+└── server.js             # Clean 35-line Express entry point mounting routes
 ```
 
 ---
 
-## 🛡️ Why Have a Backend?
+## 🚀 Why This Structure is Great for Hackathons
 
-1. **CORS Resolution**: External services like NASA FIRMS and upstream feeds enforce CORS or require custom headers that cannot be called directly from browser JavaScript.
-2. **API Key Security**: Sensitive keys (`FIRMS_API_KEY`, `ORS_API_KEY`) stay server-side and are never exposed in client bundle code.
-3. **In-Memory Caching**: Shared TTL caching reduces redundant upstream network requests and protects against rate-limiting.
-4. **Resilient Fallback Handling**: If external APIs fail or keys are absent, the server seamlessly provides realistic disaster feeds and dynamic geometry detour waypoints.
+1. **Self-Contained Code**: Each route file contains both its HTTP handler and its specific data/logic. When presenting, you don't need to jump between controllers, services, and utils.
+2. **1-to-1 Mirror with Frontend**:
+   - `client/src/api/routing.js` ➡️ `server/routes/routing.js`
+   - `client/src/api/fires.js`   ➡️ `server/routes/fires.js`
+   - Judges can immediately see how data flows from the React client to the Express endpoint.
+3. **Resilient Fallbacks**: If judges are offline or without API keys, the server seamlessly provides realistic disaster feeds and dynamic geometry detour waypoints.
 
 ---
 
 ## 📡 API Endpoints
 
-### 1. `GET /api/health`
-Health check status of the backend server.
-- **Response**: `{ status: "ok", service: "DisasterNav Backend Proxy", uptimeSeconds: number, timestamp: string }`
-
-### 2. `GET /api/earthquakes`
-Real-time worldwide M2.5+ earthquake alerts from USGS ShakeNet.
-- **Cache**: 5 minutes
-- **Response**: `{ source: string, data: Earthquake[] }`
-
-### 3. `GET /api/fires`
-Active thermal anomalies from NASA FIRMS VIIRS feed or high-fidelity regional fallbacks.
-- **Cache**: 5 minutes
-- **Response**: `{ source: string, data: Fire[] }`
-
-### 4. `GET /api/geocode?q=:search_term`
-Geographic search and autocomplete proxying Komoot Photon (OpenStreetMap).
-- **Cache**: Query-based TTL
-- **Response**: `Array<{ id, name, fullName, lat, lon, type, class }>`
-
-### 5. `POST /api/route`
-Computes driving navigation routes with dynamic disaster polygon avoidance.
-- **Body**:
-  ```json
-  {
-    "start": [longitude, latitude],
-    "end": [longitude, latitude],
-    "avoid_polygons": { "type": "Polygon", "coordinates": [...] }
-  }
-  ```
-- **Response**: `{ provider: string, avoided: boolean, route: GeoJSONFeatureCollection }`
+| Method | Endpoint | Description |
+|---|---|---|
+| `GET` | `/api/health` | Health check and server status |
+| `GET` | `/api/earthquakes` | Real-time M2.5+ earthquake alerts from USGS |
+| `GET` | `/api/fires` | Active wildfire hotspots (NASA FIRMS / FSI fallback) |
+| `GET` | `/api/geocode?q=:query` | Search address/place name suggestions |
+| `POST` | `/api/route` | Compute driving route avoiding hazard polygons |
 
 ---
 
-## 🚀 Running the Backend
+## 🏃 Running the Backend
 
 From the root project directory:
 ```bash
@@ -90,4 +56,5 @@ Or from inside `server/`:
 ```bash
 npm run dev
 ```
-Server runs at **`http://localhost:3001`**.
+
+Server runs on **`http://localhost:3001`**.
