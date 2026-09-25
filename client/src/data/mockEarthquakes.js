@@ -1,0 +1,67 @@
+// Real-world realistic seismic dataset for India & Regional Faults
+export const MOCK_EARTHQUAKES = [
+  {
+    id: "usgs-eq-chamoli-45",
+    type: "earthquake",
+    name: "Garhwal-Chamoli Thrust M4.5",
+    badgeLabel: "M4.5 Richter",
+    latitude: 30.4120,
+    longitude: 79.3240,
+    magnitude: 4.5,
+    depthKm: 10.4,
+    impactRadiusKm: 28.0,
+    place: "12km NE of Chamoli, Uttarakhand",
+    detectedTime: new Date(Date.now() - 32 * 60 * 1000).toISOString(),
+    source: "USGS ShakeNet / IMD",
+    status: "Confirmed Seismic Shockwave",
+    severity: "High"
+  },
+  {
+    id: "usgs-eq-delhi-ncr-38",
+    type: "earthquake",
+    name: "Delhi-NCR Fault Slip M3.8",
+    badgeLabel: "M3.8 Richter",
+    latitude: 28.7041,
+    longitude: 77.1025,
+    magnitude: 3.8,
+    depthKm: 12.0,
+    impactRadiusKm: 16.0,
+    place: "North Delhi Fault Zone",
+    detectedTime: new Date(Date.now() - 85 * 60 * 1000).toISOString(),
+    source: "USGS ShakeNet / IMD",
+    status: "Active Tremor Monitored",
+    severity: "Moderate"
+  },
+  {
+    id: "usgs-eq-kutch-48",
+    type: "earthquake",
+    name: "Kutch Intraplate Rift M4.8",
+    badgeLabel: "M4.8 Richter",
+    latitude: 23.7337,
+    longitude: 69.8597,
+    magnitude: 4.8,
+    depthKm: 15.2,
+    impactRadiusKm: 32.0,
+    place: "18km N of Bhuj, Gujarat",
+    detectedTime: new Date(Date.now() - 140 * 60 * 1000).toISOString(),
+    source: "USGS ShakeNet / IMD",
+    status: "Strong Motion Detected",
+    severity: "Critical"
+  },
+  {
+    id: "usgs-eq-assam-51",
+    type: "earthquake",
+    name: "Kopili Fault Zone M5.1",
+    badgeLabel: "M5.1 Richter",
+    latitude: 26.2006,
+    longitude: 92.9376,
+    magnitude: 5.1,
+    depthKm: 18.0,
+    impactRadiusKm: 38.0,
+    place: "Karbi Anglong, Assam",
+    detectedTime: new Date(Date.now() - 210 * 60 * 1000).toISOString(),
+    source: "USGS ShakeNet / IMD",
+    status: "Significant Regional Shockwave",
+    severity: "Critical"
+  }
+];

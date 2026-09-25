@@ -1,0 +1,67 @@
+// Wildfire and Forest Fire Hotspots in India
+export const MOCK_FIRES = [
+  {
+    id: "firms-fire-shivalik-pine",
+    type: "fire",
+    name: "Pine Ridge (Shivalik Hills)",
+    badgeLabel: "38% Contain",
+    latitude: 30.2240,
+    longitude: 78.0850,
+    confidence: 94,
+    brightness: 348.2,
+    impactRadiusKm: 14.2,
+    containment: "38% Contain",
+    detectedTime: new Date(Date.now() - 48 * 60 * 1000).toISOString(),
+    source: "FSI / NASA FIRMS",
+    status: "Wildfire Perimeter Active",
+    severity: "Urgent"
+  },
+  {
+    id: "firms-fire-nainital-ridge",
+    type: "fire",
+    name: "Nainital Pine Sector",
+    badgeLabel: "22% Contain",
+    latitude: 29.3919,
+    longitude: 79.4542,
+    confidence: 91,
+    brightness: 336.5,
+    impactRadiusKm: 18.5,
+    containment: "22% Contain",
+    detectedTime: new Date(Date.now() - 110 * 60 * 1000).toISOString(),
+    source: "FSI / NASA FIRMS",
+    status: "Rapid Slope Spread",
+    severity: "Critical"
+  },
+  {
+    id: "firms-fire-western-ghats",
+    type: "fire",
+    name: "Khandala Ridge Brush Fire",
+    badgeLabel: "65% Contain",
+    latitude: 18.7520,
+    longitude: 73.3650,
+    confidence: 84,
+    brightness: 318.0,
+    impactRadiusKm: 11.8,
+    containment: "65% Contain",
+    detectedTime: new Date(Date.now() - 180 * 60 * 1000).toISOString(),
+    source: "FSI / NASA FIRMS",
+    status: "Containment Operations",
+    severity: "Moderate"
+  },
+  {
+    id: "firms-fire-similipal",
+    type: "fire",
+    name: "Similipal Forest Hotspot",
+    badgeLabel: "45% Contain",
+    latitude: 21.8540,
+    longitude: 86.3420,
+    confidence: 88,
+    brightness: 329.0,
+    impactRadiusKm: 15.0,
+    containment: "45% Contain",
+    detectedTime: new Date(Date.now() - 140 * 60 * 1000).toISOString(),
+    source: "FSI / NASA FIRMS",
+    status: "Active Canopy Fire",
+    severity: "High"
+  }
+];

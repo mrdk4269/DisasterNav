@@ -1,0 +1,286 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}</style><style>:root{color-scheme:light dark;--md-bg:#fff;--md-text:rgba(0,0,0,.8);--md-muted:rgba(0,0,0,.6);--md-fill:rgba(0,0,0,.04);--md-fill-strong:rgba(0,0,0,.06);--md-rule:rgba(0,0,0,.1);--md-rule-strong:rgba(0,0,0,.16);--md-link:hsl(210 100% 45%)}@media (prefers-color-scheme:dark){:root:where(:not([data-theme="light"])){--md-bg:#0d0d0d;--md-text:rgba(255,255,255,.85);--md-muted:rgba(255,255,255,.6);--md-fill:rgba(255,255,255,.06);--md-fill-strong:rgba(255,255,255,.09);--md-rule:rgba(255,255,255,.14);--md-rule-strong:rgba(255,255,255,.22);--md-link:hsl(210 100% 72%)}}:root[data-theme="dark"]{color-scheme:dark;--md-bg:#0d0d0d;--md-text:rgba(255,255,255,.85);--md-muted:rgba(255,255,255,.6);--md-fill:rgba(255,255,255,.06);--md-fill-strong:rgba(255,255,255,.09);--md-rule:rgba(255,255,255,.14);--md-rule-strong:rgba(255,255,255,.22);--md-link:hsl(210 100% 72%)}:root[data-theme="light"]{color-scheme:light}@media print{:root,:root[data-theme="dark"]{color-scheme:light;--md-bg:#fff;--md-text:rgba(0,0,0,.8);--md-muted:rgba(0,0,0,.6);--md-fill:rgba(0,0,0,.04);--md-fill-strong:rgba(0,0,0,.06);--md-rule:rgba(0,0,0,.1);--md-rule-strong:rgba(0,0,0,.16);--md-link:hsl(210 100% 45%)}}body{background:var(--md-bg);color:var(--md-text);max-width:720px;margin:0 auto;padding:32px;display:flex;flex-direction:column;gap:10px;font:14px/1.55 -apple-system,BlinkMacSystemFont,'SF Pro','Segoe UI',sans-serif;overflow-wrap:break-word}body>:first-child{margin-top:0}h1,h2,h3,h4,h5,h6{margin:6px 0 0;line-height:1.25;font-weight:600;text-wrap:balance}h1{font-size:1.35em}h2{font-size:1.15em;color:var(--md-muted)}h3,h4,h5,h6{font-size:1em}p,ul,ol,blockquote,table,pre,hr{margin:0}strong{font-weight:600}a{color:var(--md-link);text-decoration:none}a:hover{text-decoration:underline}ul,ol{display:flex;flex-direction:column;gap:6px;padding-left:22px}ul{list-style:disc}ol{list-style:decimal}:is(li,td,th)>*+:is(p,ul,ol,blockquote){margin-top:6px}blockquote{display:flex;flex-direction:column;gap:10px;border-left:2px solid var(--md-rule);padding-left:10px;color:var(--md-muted)}:not(pre)>code{background:var(--md-fill);padding:1px 3px;border-radius:4px;font:.92em 'SF Mono',ui-monospace,Menlo,Consolas,monospace}a>code{background:none;color:inherit}pre{background:var(--md-fill);padding:10px 12px;border-radius:6px;overflow-x:auto;font:12px/1.5 'SF Mono',ui-monospace,Menlo,Consolas,monospace;margin-block:4px}pre code{background:none;padding:0;font:inherit}table{width:100%;border-collapse:separate;border-spacing:2px;font:inherit}th,td{padding:6px 8px;border-radius:3px;text-align:left;vertical-align:top}th{background:var(--md-fill-strong);font-weight:600}td{background:var(--md-fill)}:is(th,td) :not(pre)>code{background:transparent}hr{border:0;border-top:1px solid var(--md-rule-strong);margin-block:10px}img{max-width:100%;height:auto;border-radius:4px}</style>
+</head><body>
+<h1>Product Requirements Document (PRD)</h1>
+<h2>DisasterGuard — Real-Time Disaster Awareness &amp; Safe Navigation MVP</h2>
+<p><strong>Version:</strong> 1.0 (Hackathon MVP)
+<strong>Owner:</strong> [Your Name / Team Name]
+<strong>Date:</strong> September 2026</p>
+<hr>
+<h2>1. Problem Statement</h2>
+<p>People often have no simple way to check, at a glance, whether their current location or an upcoming trip route is near an active disaster (earthquake, flood, or forest fire). Existing tools are either too specialized (single-hazard government dashboards) or too generic (regular maps with no hazard awareness). There is no lightweight, map-first tool that combines live disaster data with route-level risk checking.</p>
+<h2>2. Goal</h2>
+<p>Build a web app that lets a user, in under 30 seconds:</p>
+<ol>
+<li>See active earthquakes, floods, and forest fires near their current location on a map.</li>
+<li>Enter a destination and immediately know whether their route passes through a disaster zone — and get a safer alternative if one exists.</li>
+</ol>
+<h2>3. Target Users</h2>
+<ul>
+<li>General public checking local disaster risk before traveling</li>
+<li>Hackathon judges/demo viewers evaluating a live, working prototype</li>
+<li>(Future) Disaster-response coordinators, local authorities — out of scope for MVP</li>
+</ul>
+<h2>4. Success Criteria (MVP Demo)</h2>
+<ul>
+<li>Map loads with user's live location and at least earthquake + fire layers populated from real free APIs</li>
+<li>User can toggle each disaster layer independently</li>
+<li>User can search a destination and get a route</li>
+<li>If the route crosses a hazard zone, a clear warning is shown and a safer route is offered when possible</li>
+<li>Demo is reliable even without a live disaster occurring nearby, via the Admin Demo panel</li>
+<li>Entire flow (open app → see disasters → get warned on a bad route → see safe route) is demoable in under 2 minutes</li>
+</ul>
+<h2>5. Scope</h2>
+<h3>5.1 In Scope (MVP)</h3>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Interactive GIS map</td>
+<td>Fullscreen map, user location, 3 disaster layers</td>
+</tr>
+<tr>
+<td>Live disaster data</td>
+<td>USGS (earthquake), NASA FIRMS (fire), mock GeoJSON (flood)</td>
+</tr>
+<tr>
+<td>Layer filters</td>
+<td>Toggle All / Earthquake / Flood / Forest Fire</td>
+</tr>
+<tr>
+<td>Disaster details</td>
+<td>Type, location, time, severity/confidence, source, last-updated</td>
+</tr>
+<tr>
+<td>Location search</td>
+<td>Nominatim geocoding, recenter map</td>
+</tr>
+<tr>
+<td>Safe navigation</td>
+<td>Route generation (ORS), hazard intersection check, warning, reroute</td>
+</tr>
+<tr>
+<td>Alert panel</td>
+<td>List of active disasters, sorted by distance from user</td>
+</tr>
+<tr>
+<td>Admin/Demo panel</td>
+<td>Manually inject a disaster at any point for reliable live demoing</td>
+</tr>
+<tr>
+<td>Real-time alert notification</td>
+<td>Toast + sound when a new disaster appears near the user (via polling)</td>
+</tr>
+</tbody>
+</table>
+<h3>5.2 Explicitly Out of Scope (MVP)</h3>
+<ul>
+<li>User accounts / authentication</li>
+<li>AI-based prediction or forecasting</li>
+<li>3D maps</li>
+<li>Persistent database / disaster history storage</li>
+<li>Custom-built routing/navigation engine (relies on ORS)</li>
+<li>Multi-language support</li>
+<li>Push notifications (browser-tab only, not native push)</li>
+</ul>
+<h2>6. Feature Requirements</h2>
+<h3>6.1 Interactive GIS Map</h3>
+<ul>
+<li><strong>Base map:</strong> OpenStreetMap tiles via Leaflet/react-leaflet</li>
+<li><strong>User location:</strong> via <code>navigator.geolocation</code>; requires HTTPS or localhost</li>
+<li><strong>Layers:</strong>
+<ul>
+<li>Earthquake — red pulsing marker, radius/intensity scaled by magnitude</li>
+<li>Forest Fire — orange marker, buffered circle scaled by confidence</li>
+<li>Flood — blue translucent polygon (mock data; no reliable free real-time source exists)</li>
+</ul>
+</li>
+<li><strong>Marker interaction:</strong> clicking opens a detail card with type, location, detected/reported time, severity/confidence (if available), source, last-updated timestamp</li>
+<li><strong>Data failure handling:</strong> if any live source fails or times out, fall back to a small local mock dataset for that layer and visibly flag it as cached/demo data — never show a silently blank layer</li>
+</ul>
+<h3>6.2 Disaster Filters</h3>
+<ul>
+<li>Toggle chips: All / Earthquake / Flood / Forest Fire</li>
+<li>Toggling hides/shows the corresponding map layer group instantly (client-side only)</li>
+</ul>
+<h3>6.3 Location Search</h3>
+<ul>
+<li>Free-text search box using Nominatim (OSM) geocoding, no API key required</li>
+<li>Selecting a result recenters/pans the map to that location</li>
+</ul>
+<h3>6.4 Safe Navigation</h3>
+<ul>
+<li><strong>Input:</strong> current location (auto) → destination (search/autocomplete)</li>
+<li><strong>Routing:</strong> OpenRouteService (ORS) Directions API, free tier</li>
+<li><strong>Hazard check:</strong> convert route line and all active disaster zones to GeoJSON; use turf.js (<code>booleanIntersects</code> / <code>lineIntersect</code>) to check for overlap</li>
+<li><strong>If intersecting:</strong>
+<ul>
+<li>Show a named warning, e.g. &quot;⚠️ Warning: This route passes through a flood-affected area&quot;</li>
+<li>Re-request route from ORS using <code>avoid_polygons</code> set to the hazard geometry</li>
+<li>If no valid avoidance route exists, show: &quot;No safer alternative route found — proceed with caution&quot;</li>
+</ul>
+</li>
+<li><strong>If clear:</strong> show &quot;✅ Route looks clear&quot; and render the route normally</li>
+</ul>
+<h3>6.5 Alert Panel</h3>
+<ul>
+<li>Bottom sheet, collapsed by default (peek handle + count badge)</li>
+<li>Lists all currently active disasters (real + demo-injected), sorted nearest-to-user first</li>
+<li>Each entry: icon, type, severity/magnitude, distance, detected time, source badge</li>
+<li>Tapping an entry pans the map to it and opens its detail card</li>
+</ul>
+<h3>6.6 Admin / Demo Panel</h3>
+<ul>
+<li>Accessible via a &quot;⚙️ Demo Mode&quot; toggle (no real authentication needed for MVP)</li>
+<li>Form to manually inject a disaster: type, coordinates (or click-to-place on map), severity/confidence, note</li>
+<li>Injected disasters behave identically to real data: appear on map, in alert panel, in detail cards, and are checked against routes — tagged with source &quot;Demo/Manual&quot; to stay distinguishable from real data</li>
+<li>&quot;Clear all demo disasters&quot; reset button</li>
+<li>Purpose: guarantees a reliable live demo of the warning + reroute flow regardless of whether a real disaster is occurring nearby at demo time</li>
+</ul>
+<h3>6.7 Real-Time Alert Notification</h3>
+<ul>
+<li>Frontend polls all disaster sources (real + demo) every ~30 seconds</li>
+<li>Diffs against previously seen disaster IDs; any new disaster within a configurable radius (default 20km) of the user triggers:
+<ul>
+<li>A toast notification with type, distance, and a &quot;View&quot; action</li>
+<li>A short (1–2s) alert sound, respecting browser autoplay policy (plays only after first user interaction; otherwise shows a &quot;tap to enable sound&quot; hint)</li>
+</ul>
+</li>
+<li>Same mechanism fires instantly when a disaster is injected via the Admin panel, enabling an on-demand live demo of the alert</li>
+</ul>
+<h2>7. Non-Functional Requirements</h2>
+<ul>
+<li><strong>Reliability over completeness:</strong> every external data source must have a local mock fallback; a failed API call must never break the map or crash the app</li>
+<li><strong>Performance:</strong> initial map + first layer paint within ~3 seconds on a typical connection</li>
+<li><strong>Responsiveness:</strong> mobile-first layout, usable on a phone screen and scales to desktop</li>
+<li><strong>Transparency:</strong> every piece of disaster data displays its source and last-updated time; simulated/demo data is never presented as if it were live/real</li>
+</ul>
+<h2>8. Technical Architecture</h2>
+<table>
+<thead>
+<tr>
+<th>Layer</th>
+<th>Choice</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Frontend</td>
+<td>React + react-leaflet</td>
+<td>Component-based, mobile-first</td>
+</tr>
+<tr>
+<td>Backend</td>
+<td>Node.js + Express (minimal)</td>
+<td>Only proxies calls needing hidden API keys (FIRMS, ORS)</td>
+</tr>
+<tr>
+<td>Map tiles</td>
+<td>OpenStreetMap</td>
+<td>Free, no key</td>
+</tr>
+<tr>
+<td>Earthquake data</td>
+<td>USGS Earthquake API</td>
+<td>Free, no key, GeoJSON</td>
+</tr>
+<tr>
+<td>Fire data</td>
+<td>NASA FIRMS</td>
+<td>Free key required, point data</td>
+</tr>
+<tr>
+<td>Flood data</td>
+<td>Mock GeoJSON polygons</td>
+<td>No reliable free real-time source exists</td>
+</tr>
+<tr>
+<td>Geocoding</td>
+<td>Nominatim (OSM)</td>
+<td>Free, no key</td>
+</tr>
+<tr>
+<td>Routing</td>
+<td>OpenRouteService (ORS)</td>
+<td>Free tier, supports <code>avoid_polygons</code></td>
+</tr>
+<tr>
+<td>Geometry ops</td>
+<td>turf.js</td>
+<td>Buffering, intersection checks</td>
+</tr>
+<tr>
+<td>Database</td>
+<td>None (in-memory only)</td>
+<td>No persistence needed for MVP</td>
+</tr>
+</tbody>
+</table>
+<h2>9. User Flow</h2>
+<pre><code>Open app → Map loads with GPS location → Disaster layers fetched &amp; displayed
+   → User filters layers (optional) → User searches destination
+   → Route generated → Route checked against hazard zones
+       → Clear → show route
+       → At risk → show warning → attempt safer route → show alternative
+   → Alert panel shows nearby active disasters, updated in real time
+   → (Demo) Admin panel can inject a disaster on-the-fly to trigger the above flow reliably
+</code></pre>
+<h2>10. Risks &amp; Mitigations</h2>
+<table>
+<thead>
+<tr>
+<th>Risk</th>
+<th>Mitigation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>No free real-time flood API exists</td>
+<td>Use clearly-labeled mock/simulated flood zones</td>
+</tr>
+<tr>
+<td>Live API downtime/rate limits during demo</td>
+<td>Local mock fallback dataset for every layer</td>
+</tr>
+<tr>
+<td>No real disaster near demo location at demo time</td>
+<td>Admin/Demo panel to inject a controlled disaster</td>
+</tr>
+<tr>
+<td>ORS free-tier rate limits</td>
+<td>Client-side caching of recent route requests; OSRM as backup routing option</td>
+</tr>
+<tr>
+<td>Browser blocks autoplay sound</td>
+<td>Require one user interaction before enabling alert sound; show hint otherwise</td>
+</tr>
+</tbody>
+</table>
+<h2>11. Milestones (12-Hour Build)</h2>
+<ol>
+<li>React scaffold + fullscreen map + GPS + UI shell (mock data)</li>
+<li>Wire live USGS + FIRMS layers</li>
+<li>Add mock flood layer + full detail cards with source/timestamp</li>
+<li>Build Admin/Demo injection panel</li>
+<li>Wire Nominatim search + ORS routing</li>
+<li>Add turf.js hazard-intersection check + warning + reroute</li>
+<li>Wire alert panel with real distance sorting</li>
+<li>Add real-time polling notification + sound</li>
+<li>Fallback mock data wiring for all layers + bug fixes + demo rehearsal</li>
+</ol>
+<h2>12. Out-of-Scope / Future Roadmap</h2>
+<ul>
+<li>User accounts and saved locations</li>
+<li>AI-based disaster prediction/forecasting</li>
+<li>Native push notifications</li>
+<li>Historical disaster data and analytics dashboard</li>
+<li>Multi-language and accessibility (screen reader) support</li>
+<li>Authority/responder-facing tools (verified reporting, resource dispatch)</li>
+</ul>
+
+</body></html>

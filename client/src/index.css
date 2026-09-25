@@ -1,0 +1,248 @@
+@import "leaflet/dist/leaflet.css";
+
+:root {
+  --font-sans: -apple-system, BlinkMacSystemFont, "Google Sans", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: "SF Mono", Consolas, "Liberation Mono", Menlo, monospace;
+
+  /* Google Maps Consumer Clean Palette */
+  --bg-app: #f8f9fa;
+  --bg-surface: #ffffff;
+  --bg-subtle: #f1f3f4;
+  --bg-hover: #e8eaed;
+
+  --border-color: #dadce0;
+  --border-light: #e8eaed;
+  --border-strong: #bdc1c6;
+
+  --text-main: #202124;
+  --text-muted: #5f6368;
+  --text-light: #80868b;
+
+  /* Google Brand Colors */
+  --google-blue: #1a73e8;
+  --google-blue-hover: #1765cc;
+  --google-blue-light: #e8f0fe;
+  
+  --google-green: #1e8e3e;
+  --google-green-light: #e6f4ea;
+  
+  --google-red: #d93025;
+  --google-red-light: #fce8e6;
+
+  --google-orange: #e8710a;
+  --google-orange-light: #feefe3;
+
+  --google-cyan: #129990;
+  --google-cyan-light: #e0f2fe;
+
+  /* Shadows matching Google Maps web */
+  --shadow-gmap: 0 2px 4px rgba(0, 0, 0, 0.2), 0 -1px 0px rgba(0, 0, 0, 0.02);
+  --shadow-gmap-hover: 0 4px 8px rgba(0, 0, 0, 0.25);
+  --shadow-gmap-sheet: 0 -2px 16px rgba(0, 0, 0, 0.14);
+  --shadow-gmap-popup: 0 4px 16px rgba(0, 0, 0, 0.16);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--bg-app);
+  color: var(--text-main);
+  overflow: hidden;
+  height: 100vh;
+  width: 100vw;
+  -webkit-font-smoothing: antialiased;
+}
+
+#root {
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-subtle);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border-strong);
+  border-radius: 4px;
+}
+
+/* Map Overrides */
+.leaflet-container {
+  height: 100%;
+  width: 100%;
+  background: #e5e9ec;
+  font-family: var(--font-sans);
+}
+
+/* Google Maps Consumer Style Disaster Marker Pin */
+.disaster-cycle-marker {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  pointer-events: auto;
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+
+.disaster-cycle-marker:hover {
+  transform: translateY(-2px) scale(1.05);
+  z-index: 1000 !important;
+}
+
+.cycle-icon-center {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+  border: 2px solid #ffffff;
+  color: #ffffff;
+}
+
+.cycle-icon-fire {
+  background: #e8710a;
+}
+
+.cycle-icon-flood {
+  background: #0284c7;
+}
+
+.cycle-icon-earthquake {
+  background: #d93025;
+}
+
+.cycle-icon-demo {
+  background: #8e24aa;
+}
+
+.cycle-label-name {
+  font-size: 11px;
+  font-weight: 600;
+  color: #202124;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(4px);
+  padding: 2px 7px;
+  border-radius: 10px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  margin-top: 3px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12);
+  white-space: nowrap;
+}
+
+/* Subtle, non-intrusive pulse ring */
+.radar-pulse-ring {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  animation: radar-expand 3s infinite cubic-bezier(0.2, 0.6, 0.4, 1);
+  pointer-events: none;
+}
+
+@keyframes radar-expand {
+  0% {
+    transform: scale(0.9);
+    opacity: 0.6;
+  }
+  100% {
+    transform: scale(2.4);
+    opacity: 0;
+  }
+}
+
+/* Google Maps Iconic Blue Accuracy Dot for User Location */
+.user-location-marker {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.user-location-dot {
+  width: 18px;
+  height: 18px;
+  background: #1a73e8;
+  border: 3px solid #ffffff;
+  border-radius: 50%;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.15), 0 2px 6px rgba(26, 115, 232, 0.5);
+  position: relative;
+}
+
+.user-location-dot::after {
+  content: '';
+  position: absolute;
+  top: -8px;
+  left: -8px;
+  right: -8px;
+  bottom: -8px;
+  border: 2px solid rgba(26, 115, 232, 0.5);
+  border-radius: 50%;
+  animation: radar-expand 2.5s infinite ease-out;
+}
+
+.user-location-label {
+  font-size: 10px;
+  font-weight: 600;
+  color: #1a73e8;
+  background: #ffffff;
+  padding: 1px 6px;
+  border-radius: 8px;
+  margin-top: 3px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
+  white-space: nowrap;
+}
+
+/* Active Trip Navigation Vehicle Marker */
+.trip-vehicle-marker {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.trip-vehicle-icon-wrapper {
+  width: 32px;
+  height: 32px;
+  background: #ffffff;
+  border: 2.5px solid #1e8e3e;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(30, 142, 62, 0.4);
+  position: relative;
+}
+
+.trip-vehicle-icon-wrapper.hazard-warning {
+  border-color: #d93025;
+  box-shadow: 0 2px 8px rgba(217, 48, 37, 0.5);
+}
+
+.trip-vehicle-label {
+  font-size: 10px;
+  font-weight: 700;
+  color: #ffffff;
+  background: #1e8e3e;
+  padding: 1px 6px;
+  border-radius: 8px;
+  margin-top: 2px;
+  white-space: nowrap;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.trip-vehicle-label.hazard-warning {
+  background: #d93025;
+}
