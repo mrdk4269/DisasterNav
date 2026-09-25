@@ -24,16 +24,18 @@ router.get('/', async (req, res) => {
     const data = await response.json();
 
     const earthquakes = (data.features || []).map(f => {
-      const mag = f.properties.mag || 0;
+      const p = f.properties || {};
+      const mag = typeof p.mag === 'number' && !isNaN(p.mag) ? p.mag : 0;
+      const coords = f.geometry?.coordinates || [0, 0, 0];
       return {
-        id: f.id,
-        name: f.properties.place || 'Unknown Location',
-        latitude: f.geometry.coordinates[1],
-        longitude: f.geometry.coordinates[0],
-        depth: f.geometry.coordinates[2],
+        id: f.id || `eq-${Date.now()}-${Math.random()}`,
+        name: p.place || 'Unknown Location',
+        latitude: coords[1],
+        longitude: coords[0],
+        depth: coords[2] || 10,
         magnitude: mag,
         badgeLabel: `M${mag.toFixed(1)} Richter`,
-        time: f.properties.time,
+        time: p.time || Date.now(),
         source: 'USGS ShakeNet',
         status: mag >= 4.5 ? 'Significant Tremor' : 'Minor Seismic Event',
         impactRadiusKm: Math.max(mag * 3.5, 4)

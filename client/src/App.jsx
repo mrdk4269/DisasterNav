@@ -104,6 +104,12 @@ export default function App() {
       setIsGpsActive(false);
       setUserLocation(null);
     }
+
+    return () => {
+      if (watchIdRef.current && 'geolocation' in navigator) {
+        navigator.geolocation.clearWatch(watchIdRef.current);
+      }
+    };
   }, []);
 
   // Keep refs in sync with state

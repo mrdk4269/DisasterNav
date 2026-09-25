@@ -10,16 +10,22 @@ export function ensureLonLat(coord) {
   const b = Number(coord[1]);
   if (isNaN(a) || isNaN(b)) return coord;
 
-  // If a is in latitude range (8-38) and b is in longitude range (68-98), swap them!
-  if (a >= -90 && a <= 90 && (b < -90 || b > 90 || (b >= 60 && b <= 100 && a < 40))) {
-    // Already [lon, lat] or needs swap?
-    // In India: lat is 8-38, lon is 68-98.
-    // If coord is [30.2, 78.0], it was passed as [lat, lon]! Swap to [78.0, 30.2].
-    if (a >= 5 && a <= 45 && b >= 60 && b <= 105) {
-      console.warn(`[Geometry] Swapping coordinate order from [lat, lon] (${a}, ${b}) to [lon, lat] (${b}, ${a})`);
-      return [b, a];
-    }
+  // If b is outside valid latitude range (|b| > 90) and a is within latitude range,
+  // then b is longitude and a is latitude -> passed as [lat, lon], swap to [lon, lat]!
+  if (Math.abs(b) > 90 && Math.abs(b) <= 180 && Math.abs(a) <= 90) {
+    return [b, a];
   }
+
+  // If a is outside latitude range (|a| > 90), then a is already longitude -> [lon, lat]
+  if (Math.abs(a) > 90 && Math.abs(a) <= 180 && Math.abs(b) <= 90) {
+    return [a, b];
+  }
+
+  // Regional heuristic: In South Asia / India (lat 5-45, lon 60-105)
+  if (a >= 5 && a <= 45 && b >= 60 && b <= 105) {
+    return [b, a];
+  }
+
   return [a, b];
 }
 
@@ -290,15 +296,26 @@ export function calculateRemainingRoute(routeGeoJSON, liveLocation) {
       lineFeature = routeGeoJSON.features[0];
     } else if (routeGeoJSON.type === 'Feature') {
       lineFeature = routeGeoJSON;
-    } else if (routeGeoJSON.type === 'LineString') {
+    } else if (routeGeoJSON.type === 'LineString' || routeGeoJSON.type === 'MultiLineString') {
       lineFeature = turf.feature(routeGeoJSON);
     }
 
-    if (!lineFeature || lineFeature.geometry?.type !== 'LineString') {
+    if (!lineFeature || !lineFeature.geometry) {
       return routeGeoJSON;
     }
 
-    const coords = lineFeature.geometry.coordinates;
+    let coords;
+    if (lineFeature.geometry.type === 'LineString') {
+      coords = lineFeature.geometry.coordinates;
+    } else if (lineFeature.geometry.type === 'MultiLineString') {
+      // Flatten MultiLineString segments into a unified LineString (Bug #14 fix)
+      coords = lineFeature.geometry.coordinates.flat();
+      if (coords.length < 2) return routeGeoJSON;
+      lineFeature = turf.lineString(coords, lineFeature.properties);
+    } else {
+      return routeGeoJSON;
+    }
+
     if (coords.length < 2) return routeGeoJSON;
 
     const userPt = turf.point([liveLocation[1], liveLocation[0]]);

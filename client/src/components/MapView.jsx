@@ -27,17 +27,20 @@ function MapController({ flyTarget }) {
 // Map event listener for panning coordinates and click-to-place demo hazard
 function MapEvents({ onCenterChange, isPlacingOnMap, onMapClick }) {
   const map = useMap();
+  const onCenterChangeRef = useRef(onCenterChange);
+  const onMapClickRef = useRef(onMapClick);
+
+  useEffect(() => { onCenterChangeRef.current = onCenterChange; }, [onCenterChange]);
+  useEffect(() => { onMapClickRef.current = onMapClick; }, [onMapClick]);
 
   useEffect(() => {
     const handleMove = () => {
       const c = map.getCenter();
-      onCenterChange([c.lat, c.lng]);
+      onCenterChangeRef.current?.([c.lat, c.lng]);
     };
 
     const handleClick = (e) => {
-      if (onMapClick) {
-        onMapClick([e.latlng.lat, e.latlng.lng]);
-      }
+      onMapClickRef.current?.([e.latlng.lat, e.latlng.lng]);
     };
 
     map.on('moveend', handleMove);
@@ -56,7 +59,7 @@ function MapEvents({ onCenterChange, isPlacingOnMap, onMapClick }) {
       map.off('click', handleClick);
       map.getContainer().style.cursor = '';
     };
-  }, [map, onCenterChange, isPlacingOnMap, onMapClick]);
+  }, [map, isPlacingOnMap]);
 
   return null;
 }

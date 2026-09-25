@@ -33,6 +33,24 @@ app.use('/api/fires', fireRoutes);
 app.use('/api/geocode', geocodeRoutes);
 app.use('/api/route', routingRoutes);
 
+// Global Error Handling Middleware (Bug #17 fix)
+app.use((err, req, res, next) => {
+  console.error('[DisasterNav Backend] Unhandled request error:', err);
+  res.status(err.status || 500).json({
+    error: 'Internal server error',
+    message: err.message || 'An unexpected error occurred'
+  });
+});
+
+// Process-level crash guards
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('[DisasterNav Backend] Unhandled Promise Rejection:', reason);
+});
+
+process.on('uncaughtException', (err) => {
+  console.error('[DisasterNav Backend] Uncaught Exception:', err);
+});
+
 app.listen(PORT, () => {
   console.log(`[DisasterNav Backend] Running at http://localhost:${PORT}`);
   console.log(`[DisasterNav Backend] Active Routes:`);

@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { 
   Menu, 
   Search, 
@@ -18,6 +18,13 @@ export function TopBarSearch({ onOpenDrawer, onOpenDirections, onSelectSearchRes
   const [showDropdown, setShowDropdown] = useState(false);
   const debounceRef = useRef(null);
 
+  // Bug #19 fix: clean up debounce timer on unmount
+  useEffect(() => {
+    return () => {
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+    };
+  }, []);
+
   const handleSearchChange = (e) => {
     const val = e.target.value;
     setQuery(val);
@@ -31,9 +38,15 @@ export function TopBarSearch({ onOpenDrawer, onOpenDirections, onSelectSearchRes
     }
 
     debounceRef.current = setTimeout(async () => {
-      const places = await searchLocations(val);
-      setResults(places);
-      setShowDropdown(true);
+      // Bug #20 fix: error handling on searchLocations
+      try {
+        const places = await searchLocations(val);
+        setResults(places || []);
+        setShowDropdown(true);
+      } catch (err) {
+        console.warn('[TopBarSearch] Geocoding search failed:', err);
+        setResults([]);
+      }
     }, 200);
   };
 

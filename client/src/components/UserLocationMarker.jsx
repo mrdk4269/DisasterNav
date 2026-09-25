@@ -21,7 +21,7 @@ function createUserDivIcon() {
 const userIcon = createUserDivIcon();
 
 export default function UserLocationMarker({ location, isGpsActive }) {
-  if (!isGpsActive || !location || !location[0] || !location[1]) {
+  if (!isGpsActive || !location || location.length < 2 || location[0] == null || location[1] == null || isNaN(location[0]) || isNaN(location[1])) {
     return null;
   }
 

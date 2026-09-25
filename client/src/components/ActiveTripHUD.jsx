@@ -24,8 +24,8 @@ export default function ActiveTripHUD({
 }) {
   if (!isActive) return null;
 
-  const etaMinutes = distanceRemainingKm 
-    ? Math.max(1, Math.round((distanceRemainingKm / 60) * 60)) 
+  const etaMinutes = (distanceRemainingKm !== null && distanceRemainingKm !== undefined)
+    ? (distanceRemainingKm <= 0 ? 0 : Math.max(1, Math.round((distanceRemainingKm / 60) * 60)))
     : 15;
 
   // Determine the correct status label based on actual verification state

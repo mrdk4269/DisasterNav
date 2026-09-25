@@ -7,7 +7,7 @@ export async function fetchEarthquakes() {
     const proxyRes = await fetch('/api/earthquakes', { signal: AbortSignal.timeout(5000) });
     if (proxyRes.ok) {
       const json = await proxyRes.json();
-      if (json.data && json.data.length > 0) {
+      if (json.data && Array.isArray(json.data) && json.data.length > 0) {
         const formatted = json.data.slice(0, 30).map(eq => {
           const lat = eq.latitude;
           const lon = eq.longitude;

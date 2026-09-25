@@ -31,7 +31,7 @@ const normalVehicleIcon = createVehicleIcon(false);
 const warningVehicleIcon = createVehicleIcon(true);
 
 export default function ActiveTripMarker({ location, isHazardWarning }) {
-  if (!location || !location[0] || !location[1]) return null;
+  if (!location || location.length < 2 || location[0] == null || location[1] == null || isNaN(location[0]) || isNaN(location[1])) return null;
 
   return (
     <Marker 

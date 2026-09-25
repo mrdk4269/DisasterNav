@@ -20,18 +20,18 @@
 | 8 | 🟠 High | ✅ Resolved | `routing.js` (client) | Multi-polygon centroid detour sends user to nowhere |
 | 9 | 🟠 High | ✅ Resolved | `server/routes/geocode.js` | Unbounded geocode cache causes memory leak |
 | 10 | 🟠 High | ✅ Resolved | `AlertSheet.jsx` | Crash when `disasters` prop is undefined |
-| 11 | 🟡 Medium | `ActiveTripHUD.jsx` | ETA jumps to 15 min when distance is exactly 0 |
-| 12 | 🟡 Medium | `ActiveTripMarker.jsx` / `UserLocationMarker.jsx` | Markers vanish at 0° lat/lon |
-| 13 | 🟡 Medium | `geometry.js` | `ensureLonLat` only works for India coordinates |
-| 14 | 🟡 Medium | `geometry.js` | `calculateRemainingRoute` ignores MultiLineString |
-| 15 | 🟡 Medium | `App.jsx` | Missing geolocation watch cleanup on unmount |
-| 16 | 🟡 Medium | `MapView.jsx` | Excessive re-renders from `move` event |
-| 17 | 🟡 Medium | `server/server.js` | No global error handler for unhandled rejections |
-| 18 | 🟡 Medium | `server/routes/earthquakes.js` | `toFixed` crash on null magnitude |
-| 19 | 🟢 Low | `TopBar.jsx` | Debounce timer not cleared on unmount |
-| 20 | 🟢 Low | `TopBar.jsx` | Missing error handling on geocoding search |
-| 21 | 🟢 Low | `earthquakes.js` (client) | Missing `Array.isArray()` guard on `json.data` |
-| 22 | 🟢 Low | `index.css` / `App.css` | Z-index conflict between markers and UI controls |
+| 11 | 🟡 Medium | ✅ Resolved | `ActiveTripHUD.jsx` | ETA jumps to 15 min when distance is exactly 0 |
+| 12 | 🟡 Medium | ✅ Resolved | `ActiveTripMarker.jsx` / `UserLocationMarker.jsx` | Markers vanish at 0° lat/lon |
+| 13 | 🟡 Medium | ✅ Resolved | `geometry.js` | `ensureLonLat` only works for India coordinates |
+| 14 | 🟡 Medium | ✅ Resolved | `geometry.js` | `calculateRemainingRoute` ignores MultiLineString |
+| 15 | 🟡 Medium | ✅ Resolved | `App.jsx` | Missing geolocation watch cleanup on unmount |
+| 16 | 🟡 Medium | ✅ Resolved | `MapView.jsx` | Excessive re-renders from `move` event |
+| 17 | 🟡 Medium | ✅ Resolved | `server/server.js` | No global error handler for unhandled rejections |
+| 18 | 🟡 Medium | ✅ Resolved | `server/routes/earthquakes.js` | `toFixed` crash on null magnitude |
+| 19 | 🟢 Low | ✅ Resolved | `TopBar.jsx` | Debounce timer not cleared on unmount |
+| 20 | 🟢 Low | ✅ Resolved | `TopBar.jsx` | Missing error handling on geocoding search |
+| 21 | 🟢 Low | ✅ Resolved | `earthquakes.js` (client) | Missing `Array.isArray()` guard on `json.data` |
+| 22 | 🟢 Low | ✅ Resolved | `index.css` / `App.css` | Z-index conflict between markers and UI controls |
 
 ---
 
