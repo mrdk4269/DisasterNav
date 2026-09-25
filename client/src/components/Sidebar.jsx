@@ -11,6 +11,7 @@ import {
   ExternalLink,
   Info
 } from 'lucide-react';
+import DisasterNavLogo from './DisasterNavLogo';
 
 export default function Sidebar({ 
   isOpen, 
@@ -27,15 +28,7 @@ export default function Sidebar({
       <div className="gmap-drawer" onClick={(e) => e.stopPropagation()}>
         {/* Drawer Brand Header */}
         <div className="drawer-header">
-          <div className="drawer-brand">
-            <div className="drawer-logo">
-              <ShieldAlert size={22} />
-            </div>
-            <div>
-              <div className="drawer-title">DisasterGuard</div>
-              <div className="drawer-subtitle">Safe Navigation & Crisis Alerts</div>
-            </div>
-          </div>
+          <DisasterNavLogo size={38} showText={true} subtitle="Safe Navigation & Crisis Alerts" />
           <button className="drawer-close-btn" onClick={onClose} title="Close menu">
             <X size={20} />
           </button>
@@ -111,7 +104,7 @@ export default function Sidebar({
 
         {/* Consumer Clean Footer */}
         <div className="drawer-footer">
-          <div style={{ fontWeight: '600', color: '#202124' }}>DisasterGuard v2.0</div>
+          <div style={{ fontWeight: '700', color: '#202124' }}>DisasterNav v2.0</div>
           <div>Public Safety & Disaster Evacuation System</div>
         </div>
       </div>

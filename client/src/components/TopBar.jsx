@@ -11,6 +11,7 @@ import {
   Flame
 } from 'lucide-react';
 import { searchLocations } from '../api/geocoding';
+import DisasterNavLogo from './DisasterNavLogo';
 
 export function TopBarSearch({ onOpenDrawer, onOpenDirections, onSelectSearchResult }) {
   const [query, setQuery] = useState('');
@@ -92,16 +93,25 @@ export function TopBarSearch({ onOpenDrawer, onOpenDirections, onSelectSearchRes
       <button 
         className="search-hamburger-btn" 
         onClick={onOpenDrawer}
-        title="Menu"
-        aria-label="Open navigation menu"
+        title="DisasterNav Menu"
+        aria-label="Open DisasterNav menu"
       >
         <Menu size={20} />
       </button>
 
+      {/* DisasterNav Brand Logo inside search bar */}
+      <div 
+        onClick={onOpenDrawer}
+        style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', marginLeft: '2px', marginRight: '4px', flexShrink: 0 }}
+        title="DisasterNav — Safe Navigation & Real-Time Alerts"
+      >
+        <DisasterNavLogo size={24} />
+      </div>
+
       <input 
         type="text" 
         className="search-input-consumer"
-        placeholder="Search a city, address, or landmark"
+        placeholder="Search DisasterNav safe routes..."
         value={query}
         onChange={handleSearchChange}
         onKeyDown={handleKeyDown}

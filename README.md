@@ -1,4 +1,4 @@
-# DisasterNav (DisasterGuard GEO-OPS) MVP
+# DisasterNav — Real-Time Disaster Awareness & Safe Navigation MVP
 
 Real-Time Disaster Awareness & Safe Navigation Web App built with React, Leaflet, Turf.js, and an Express proxy backend.
 
@@ -6,9 +6,9 @@ Real-Time Disaster Awareness & Safe Navigation Web App built with React, Leaflet
 
 ## ✨ Features & User Specific Implementations
 
-1. **Clean, Modern UI (Non-Dark Theme with Exact Structure & Positioning)**
+1. **Clean, Modern UI (Consumer Google Maps Style Navigation)**
    - Replicates the structural layout from the PRD & reference design:
-     - **Left Sidebar**: DisasterGuard / GEO-OPS CORE brand header, navigation items (Tactical Map, Active Incidents, Safe Navigation, Inject Hazard, Analytics), and bottom status footer (`DEFCON 2`, `SYNC: UTC`, `SAT-LINK EST 99.98%`).
+     - **Left Sidebar**: DisasterNav brand header with custom vector logo, navigation items (Explore Map, Safe Directions, Inject Demo Hazard, Active Alerts), and bottom status footer.
      - **Top Bar**: Live map center coordinates (`37.7749° N, 122.4194° W`), Active Alert banner, Opt-in sound toggle, Evac/Demo trigger button.
      - **Secondary Bar**: `LIVE TELEMETRY: ACTIVE | FREQ 433.92 MHz`, OpenStreetMap Nominatim live search with autocomplete, and floating **Geospatial Key** legend toggle.
      - **Filter Chips**: All Disasters, Earthquakes, Forest Fires, Flood Zones, and Route Status.
