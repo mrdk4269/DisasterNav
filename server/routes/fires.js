@@ -92,7 +92,7 @@ router.get('/', async (req, res) => {
   }
 
   try {
-    const firmsUrl = `https://firms.modaps.eosdis.nasa.gov/api/country/csv/${firmsKey}/VIIRS_SNPP_NRT/IND/1`;
+    const firmsUrl = `https://firms.modaps.eosdis.nasa.gov/api/area/csv/${firmsKey}/VIIRS_SNPP_NRT/world/1`;
     const response = await fetch(firmsUrl);
     if (!response.ok) throw new Error(`FIRMS API returned ${response.status}`);
 

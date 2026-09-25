@@ -83,6 +83,7 @@ export default function NavDrawer({
 
   const handleOriginSearch = async (val) => {
     setOriginText(val);
+    setOriginCoords(null);
     if (!val || val.length < 2) {
       setOriginSuggestions([]);
       return;
@@ -99,6 +100,7 @@ export default function NavDrawer({
 
   const handleDestSearch = async (val) => {
     setDestText(val);
+    setDestCoords(null);
     if (!val || val.length < 2) {
       setDestSuggestions([]);
       return;

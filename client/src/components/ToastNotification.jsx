@@ -1,14 +1,17 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { X, Eye, Flame, Waves, Activity } from 'lucide-react';
 
 export default function ToastNotification({ toast, onClose, onView }) {
+  const onCloseRef = useRef(onClose);
+  useEffect(() => { onCloseRef.current = onClose; }, [onClose]);
+
   useEffect(() => {
     if (!toast) return;
     const timer = setTimeout(() => {
-      onClose();
+      onCloseRef.current();
     }, 7000);
     return () => clearTimeout(timer);
-  }, [toast, onClose]);
+  }, [toast]);
 
   if (!toast) return null;
 

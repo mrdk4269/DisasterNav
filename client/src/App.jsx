@@ -75,6 +75,15 @@ export default function App() {
   const watchIdRef = useRef(null);
   const simIndexRef = useRef(0);
 
+  // Refs for values used inside loadDisasterData & handlePositionTick to avoid dependency churn (Bug #3 & #4)
+  const telemetryCoordsRef = useRef(telemetryCoords);
+  const userLocationRef = useRef(userLocation);
+  const activeTripRef = useRef(activeTrip);
+  const remainingRouteRef = useRef(remainingRouteGeoJSON);
+  const liveTripLocationRef = useRef(liveTripLocation);
+  const tripDataRef = useRef(tripData);
+  const checkAndHandleMidTripHazardRef = useRef(null);
+
   // 1. Geolocation Check
   useEffect(() => {
     if ('geolocation' in navigator) {
@@ -96,6 +105,14 @@ export default function App() {
       setUserLocation(null);
     }
   }, []);
+
+  // Keep refs in sync with state
+  useEffect(() => { telemetryCoordsRef.current = telemetryCoords; }, [telemetryCoords]);
+  useEffect(() => { userLocationRef.current = userLocation; }, [userLocation]);
+  useEffect(() => { activeTripRef.current = activeTrip; }, [activeTrip]);
+  useEffect(() => { remainingRouteRef.current = remainingRouteGeoJSON; }, [remainingRouteGeoJSON]);
+  useEffect(() => { liveTripLocationRef.current = liveTripLocation; }, [liveTripLocation]);
+  useEffect(() => { tripDataRef.current = tripData; }, [tripData]);
 
   // Combined disasters list (Live feeds + Manual demo injections)
   const allDisasters = [...liveDisasters, ...demoDisasters];
@@ -185,33 +202,33 @@ export default function App() {
     }
   }, [tripData, liveTripLocation]);
 
-  // Position tick handler
+  // Keep hazard handler ref in sync
+  useEffect(() => { checkAndHandleMidTripHazardRef.current = checkAndHandleMidTripHazard; }, [checkAndHandleMidTripHazard]);
+
+  // Position tick handler (Bug #4 fix: side effects moved out of state updater)
   const handlePositionTick = useCallback((coords) => {
     setLiveTripLocation(coords);
 
-    setTripData(currentTrip => {
-      if (!currentTrip?.fullRoute) return currentTrip;
+    const currentTrip = tripDataRef.current;
+    if (!currentTrip?.fullRoute) return;
 
-      const sliced = calculateRemainingRoute(currentTrip.fullRoute, coords);
-      setRemainingRouteGeoJSON(sliced);
-      setDistanceRemainingKm(getRouteLengthKm(sliced));
+    const sliced = calculateRemainingRoute(currentTrip.fullRoute, coords);
+    setRemainingRouteGeoJSON(sliced);
+    setDistanceRemainingKm(getRouteLengthKm(sliced));
 
-      if (isOffRoute(currentTrip.fullRoute, coords, 0.8)) {
-        getRoute(coords, currentTrip.destinationCoords).then(reRoute => {
-          if (reRoute.success && reRoute.routeGeoJSON) {
-            setRouteGeoJSON(reRoute.routeGeoJSON);
-            setSafeRouteGeoJSON(null);
-            setRemainingRouteGeoJSON(reRoute.routeGeoJSON);
-            setDistanceRemainingKm(getRouteLengthKm(reRoute.routeGeoJSON));
-          }
-        });
-      }
-
-      return currentTrip;
-    });
+    if (isOffRoute(currentTrip.fullRoute, coords, 0.8)) {
+      getRoute(coords, currentTrip.destinationCoords).then(reRoute => {
+        if (reRoute.success && reRoute.routeGeoJSON) {
+          setRouteGeoJSON(reRoute.routeGeoJSON);
+          setSafeRouteGeoJSON(null);
+          setRemainingRouteGeoJSON(reRoute.routeGeoJSON);
+          setDistanceRemainingKm(getRouteLengthKm(reRoute.routeGeoJSON));
+        }
+      });
+    }
   }, []);
 
-  // 2. Fetch and merge all disaster feeds
+  // 2. Fetch and merge all disaster feeds (Bug #3 fix: reads volatile state from refs to prevent re-fetch loops)
   const loadDisasterData = useCallback(async () => {
     try {
       const [eqRes, fireRes, floodRes] = await Promise.all([
@@ -228,7 +245,7 @@ export default function App() {
 
       merged.forEach(d => {
         if (!knownIdsRef.current.has(d.id) && knownIdsRef.current.size > 0) {
-          const origin = userLocation || telemetryCoords;
+          const origin = userLocationRef.current || telemetryCoordsRef.current;
           const dist = calculateDistance(origin[0], origin[1], d.latitude, d.longitude);
 
           if (dist <= alertRadiusKm) {
@@ -245,13 +262,13 @@ export default function App() {
 
       setLiveDisasters(merged);
 
-      if (activeTrip && remainingRouteGeoJSON) {
-        checkAndHandleMidTripHazard(remainingRouteGeoJSON, merged, liveTripLocation);
+      if (activeTripRef.current && remainingRouteRef.current) {
+        checkAndHandleMidTripHazardRef.current?.(remainingRouteRef.current, merged, liveTripLocationRef.current);
       }
     } catch (err) {
       console.error('Failed to load disaster feeds:', err);
     }
-  }, [userLocation, telemetryCoords, alertRadiusKm, activeTrip, remainingRouteGeoJSON, liveTripLocation, checkAndHandleMidTripHazard]);
+  }, [alertRadiusKm]);
 
   useEffect(() => {
     loadDisasterData();

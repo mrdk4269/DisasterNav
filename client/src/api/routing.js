@@ -54,15 +54,36 @@ export async function getRoute(startCoords, endCoords, avoidPolygons = null) {
 
     if (avoidPolygons && avoidPolygons.coordinates) {
       try {
-        const allPoints = [];
-        function collectPoints(arr) {
-          if (Array.isArray(arr) && typeof arr[0] === 'number' && typeof arr[1] === 'number') {
-            allPoints.push(arr);
-          } else if (Array.isArray(arr)) {
-            arr.forEach(collectPoints);
+        // Bug #8 fix: For MultiPolygon, find the polygon closest to route midpoint
+        // instead of averaging all coordinates globally
+        const routeMidLon = (start[0] + end[0]) / 2;
+        const routeMidLat = (start[1] + end[1]) / 2;
+
+        let polygonRings;
+        if (avoidPolygons.type === 'MultiPolygon') {
+          // Each element in coordinates is a polygon (array of rings)
+          let closestDist = Infinity;
+          let closestRing = null;
+          for (const polygon of avoidPolygons.coordinates) {
+            const ring = polygon[0]; // outer ring
+            if (!ring || ring.length === 0) continue;
+            let cLon = 0, cLat = 0;
+            ring.forEach(p => { cLon += p[0]; cLat += p[1]; });
+            cLon /= ring.length;
+            cLat /= ring.length;
+            const dist = Math.sqrt(Math.pow(cLon - routeMidLon, 2) + Math.pow(cLat - routeMidLat, 2));
+            if (dist < closestDist) {
+              closestDist = dist;
+              closestRing = ring;
+            }
           }
+          polygonRings = closestRing ? [closestRing] : [];
+        } else {
+          // Single Polygon: coordinates[0] is the outer ring
+          polygonRings = avoidPolygons.coordinates[0] ? [avoidPolygons.coordinates[0]] : [];
         }
-        collectPoints(avoidPolygons.coordinates);
+
+        const allPoints = polygonRings.flat();
 
         if (allPoints.length > 0) {
           let sLon = 0, sLat = 0;

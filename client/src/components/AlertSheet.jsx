@@ -20,7 +20,7 @@ export default function AlertSheet({
 }) {
   const origin = userLocation || referenceCoords || [28.6139, 77.2090];
 
-  const sortedDisasters = [...disasters].map(d => {
+  const sortedDisasters = [...(disasters || [])].map(d => {
     const dist = calculateDistance(origin[0], origin[1], d.latitude, d.longitude);
     return { ...d, distanceKm: dist };
   }).sort((a, b) => a.distanceKm - b.distanceKm);

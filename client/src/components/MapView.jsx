@@ -40,7 +40,7 @@ function MapEvents({ onCenterChange, isPlacingOnMap, onMapClick }) {
       }
     };
 
-    map.on('move', handleMove);
+    map.on('moveend', handleMove);
     map.on('zoomend', handleMove);
     map.on('click', handleClick);
 
@@ -51,7 +51,7 @@ function MapEvents({ onCenterChange, isPlacingOnMap, onMapClick }) {
     }
 
     return () => {
-      map.off('move', handleMove);
+      map.off('moveend', handleMove);
       map.off('zoomend', handleMove);
       map.off('click', handleClick);
       map.getContainer().style.cursor = '';

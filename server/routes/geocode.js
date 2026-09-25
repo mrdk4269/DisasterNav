@@ -4,6 +4,7 @@ const router = express.Router();
 
 const geocodeCache = new Map();
 const CACHE_TTL_MS = 5 * 60 * 1000;
+const MAX_CACHE_SIZE = 500;
 
 /**
  * GET /api/geocode?q=query
@@ -17,10 +18,13 @@ router.get('/', async (req, res) => {
 
   const cleanQuery = query.trim().toLowerCase();
   
-  // Check cache
+  // Check cache (delete expired entries instead of just bypassing them)
   const cached = geocodeCache.get(cleanQuery);
-  if (cached && (Date.now() - cached.timestamp < CACHE_TTL_MS)) {
-    return res.json(cached.data);
+  if (cached) {
+    if (Date.now() - cached.timestamp < CACHE_TTL_MS) {
+      return res.json(cached.data);
+    }
+    geocodeCache.delete(cleanQuery);
   }
 
   try {
@@ -49,6 +53,11 @@ router.get('/', async (req, res) => {
           };
         });
 
+        // Evict oldest entry if cache is full
+        if (geocodeCache.size >= MAX_CACHE_SIZE) {
+          const oldestKey = geocodeCache.keys().next().value;
+          geocodeCache.delete(oldestKey);
+        }
         geocodeCache.set(cleanQuery, { data: results, timestamp: Date.now() });
         return res.json(results);
       }

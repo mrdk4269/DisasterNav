@@ -9,16 +9,33 @@ function computeDetourWaypoint(start, end, avoid_polygons) {
   if (!avoid_polygons || !avoid_polygons.coordinates) return null;
 
   try {
-    const allPoints = [];
-    function collectPoints(arr) {
-      if (Array.isArray(arr) && typeof arr[0] === 'number' && typeof arr[1] === 'number') {
-        allPoints.push(arr);
-      } else if (Array.isArray(arr)) {
-        arr.forEach(collectPoints);
-      }
-    }
-    collectPoints(avoid_polygons.coordinates);
+    // Bug #8 fix: For MultiPolygon, find the polygon closest to route midpoint
+    const routeMidLon = (start[0] + end[0]) / 2;
+    const routeMidLat = (start[1] + end[1]) / 2;
 
+    let polygonRings;
+    if (avoid_polygons.type === 'MultiPolygon') {
+      let closestDist = Infinity;
+      let closestRing = null;
+      for (const polygon of avoid_polygons.coordinates) {
+        const ring = polygon[0];
+        if (!ring || ring.length === 0) continue;
+        let cLon = 0, cLat = 0;
+        ring.forEach(p => { cLon += p[0]; cLat += p[1]; });
+        cLon /= ring.length;
+        cLat /= ring.length;
+        const dist = Math.sqrt(Math.pow(cLon - routeMidLon, 2) + Math.pow(cLat - routeMidLat, 2));
+        if (dist < closestDist) {
+          closestDist = dist;
+          closestRing = ring;
+        }
+      }
+      polygonRings = closestRing ? [closestRing] : [];
+    } else {
+      polygonRings = avoid_polygons.coordinates[0] ? [avoid_polygons.coordinates[0]] : [];
+    }
+
+    const allPoints = polygonRings.flat();
     if (allPoints.length === 0) return null;
 
     let sLon = 0, sLat = 0;

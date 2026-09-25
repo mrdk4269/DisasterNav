@@ -23,7 +23,9 @@ export async function fetchFires() {
         containment: item.containment || 'Active Perimeter',
         impactRadiusKm: radiusKm,
         place: item.place || `${item.name || 'Thermal Hotspot'} Sector`,
-        detectedTime: item.acq_date ? `${item.acq_date} ${item.acq_time || ''}` : new Date().toISOString(),
+        detectedTime: item.acq_date
+          ? new Date(`${item.acq_date}T${String(item.acq_time || '0000').padStart(4, '0').slice(0, 2)}:${String(item.acq_time || '0000').padStart(4, '0').slice(2)}:00Z`).toISOString()
+          : new Date().toISOString(),
         source: json.source || 'CAL-FIRE/FIRMS',
         status: item.status || 'Active Wildfire Threat',
         severity: (item.confidence > 90 || (item.brightness && item.brightness > 340)) ? 'Urgent' : 'High',
